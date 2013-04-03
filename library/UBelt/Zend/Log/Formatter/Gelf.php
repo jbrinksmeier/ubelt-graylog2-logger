@@ -30,9 +30,10 @@ class UBelt_Zend_Log_Formatter_Gelf extends Zend_Log_Formatter_Abstract {
 	const VERSION = '1.0';
 
 	public function format($event) {
-		$gelf = array();
-		
-		$gelf['short_message'] = $event['message'];
+        $simpleFormatter = new Zend_Log_Formatter_Simple();
+        $event['message'] = $simpleFormatter->format($event);
+        $gelf = array();
+        $gelf['short_message'] = $event['message'];
 		$gelf['timestamp'] = strtotime($event['timestamp']);
 		$gelf['level'] = $event['priority'];
 		

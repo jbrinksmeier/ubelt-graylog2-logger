@@ -42,8 +42,15 @@ class UBelt_Zend_Log_Writer_Graylog2 extends Zend_Log_Writer_Abstract {
 	private $_maxChunkSize;
 	
 	private $_socket;
+
 	
 	public function __construct($facility, $graylog_server, $port='12201', $maxChunkSize='LAN') {
+        if (empty($facility)) {
+            throw new \InvalidArgumentException('$facility must not be empty');
+        }
+        if (empty($graylog_server)) {
+            throw new \InvalidArgumentException('$server must not be empty');
+        }
 		$this->_facility = $facility;
 		$this->_server = $graylog_server;
 		$this->_port = $port;
@@ -52,6 +59,8 @@ class UBelt_Zend_Log_Writer_Graylog2 extends Zend_Log_Writer_Abstract {
 		$this->_host = gethostname();
 		
 		$this->_setupStreamParameters();
+
+        $this->_formatter = new UBelt_Zend_Log_Formatter_Gelf();
 	}
 	
     /**
@@ -62,7 +71,15 @@ class UBelt_Zend_Log_Writer_Graylog2 extends Zend_Log_Writer_Abstract {
      */
     static public function factory($config)
     {
-        return new self(self::_parseConfig($config));
+        $config = self::_parseConfig($config);
+        $facility = (isset($config['facility']))
+            ? $config['facility']
+            : null;
+        $server = (isset($config['server']))
+            ? $config['server']
+            : null;
+
+        return new self($facility, $server);
     }
 	
 	private function _setupStreamParameters() {
