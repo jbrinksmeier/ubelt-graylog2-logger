@@ -52,11 +52,12 @@ class UBelt_Zend_Log_Formatter_Gelf extends Zend_Log_Formatter_Abstract {
 		$fields = array('full_message', 'type', 'file', 'line');
 		
 		foreach ($event as $key=>$value) {
-			if (array_key_exists($key, $fields)) {
-				$gelf[$key] = $value;
-			} else {
-				$gelf['_'.$key] = $value;
+			
+			if (!in_array($key, $fields)) {
+				$key = '_' . $key;
 			}
+			
+			$gelf[$key] = $value;
 		}
 		
 		$this->_validateEvent($gelf);
